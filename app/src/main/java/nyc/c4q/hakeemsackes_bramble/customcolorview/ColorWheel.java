@@ -25,15 +25,14 @@ public class ColorWheel extends View {
     Color color;
 
 
-
     public ColorWheel(final Context context, AttributeSet attrs) {
         super(context, attrs);
 
         centerPointX = 400;
         centerPointY = 400;
         radius = 400;
-        color= new Color();
-        paint =new Paint(Paint.ANTI_ALIAS_FLAG);
+        color = new Color();
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         setOnTouchListener(new OnTouchListener() {
             @Override
@@ -41,25 +40,43 @@ public class ColorWheel extends View {
                 xValue = event.getX();
                 yValue = event.getY();
                 distFromCenter = distanceFromPoint(centerPointX, centerPointY);
+                switch (event.getAction()) {
 
-                if (distFromCenter < radius) {
-                    float transperancy = distFromCenter / radius * 255;
-                    float redValue = distanceFromPoint(centerPointX, centerPointY - radius) / radius * 255;
-                    float greenValue = (distanceFromPoint(centerPointX + (radius * Math.sqrt(3) / 2), centerPointY + (radius / 2)) / (radius * 2)) * 255;
-                    float blueValue = (distanceFromPoint(centerPointX - (radius * Math.sqrt(3) / 2), centerPointY + (radius / 2)) / (radius * 2)) * 255;
-                    int colorValue = color.argb((int) transperancy,(int)redValue,(int) greenValue,(int)blueValue);
-                    paint.setColor(colorValue);
+                    case MotionEvent.ACTION_DOWN:
+                        displayColor();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        displayColor();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    default:
+                        return false;
                 }
-                return false;
+                return true;
             }
         });
+
+
+    }
+
+    private void displayColor(){
+        if (distFromCenter < radius) {
+            float transparency = 255;//distFromCenter / radius * 255;
+            float redValue = distanceFromPoint(centerPointX, centerPointY - radius) / (radius) * 255;
+            float greenValue = (distanceFromPoint(centerPointX + (radius * Math.sqrt(3) / 2), centerPointY - (radius / 2)) / (radius)) * 255;
+            float blueValue = (distanceFromPoint(centerPointX - (radius * Math.sqrt(3) / 2), centerPointY - (radius / 2)) / (radius)) * 255;
+            int colorValue = color.argb((int) transparency, (int) redValue, (int) greenValue, (int) blueValue);
+            paint.setColor(colorValue);
+            invalidate();
+        }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawCircle(centerPointX, centerPointY, radius, paint);
-        invalidate();
+
     }
 
 
